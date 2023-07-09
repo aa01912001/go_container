@@ -8,7 +8,7 @@ type Stack[T any] struct {
 	lock sync.RWMutex
 }
 
-// create an instance of stack with specified capacity
+// create an instance of stack
 func Init[T any]() *Stack[T] {
 	return &Stack[T]{
 		data: make([]T, 0),
