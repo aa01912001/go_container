@@ -37,7 +37,7 @@ func (s *Stack[T]) Top() T {
 	return s.data[s.top-1]
 }
 
-// push an element into staRWMutex
+// push an element into stack
 func (s *Stack[T]) Push(item T) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
