@@ -1,4 +1,4 @@
-package stack
+package queue
 
 import (
 	"reflect"
@@ -14,25 +14,25 @@ func TestPush(t *testing.T) {
 	testCases := []testCase[interface{}]{
 		{
 			set:  []interface{}{3, 1, 6, 5, 1},
-			want: 1,
+			want: 3,
 		},
 		{
 			set:  []interface{}{3.1, 1.2, 6.1, 5.7, 1.1},
-			want: 1.1,
+			want: 3.1,
 		},
 		{
 			set:  []interface{}{"e", "d", "c", "b", "a"},
-			want: "a",
+			want: "e",
 		},
 	}
 
 	for _, tc := range testCases {
-		stk := Init[interface{}]()
+		q := Init[interface{}]()
 		for _, v := range tc.set {
-			stk.Push(v)
+			q.Push(v)
 		}
-		if stk.Top() != tc.want {
-			t.Errorf("want =  %v, but result = %v", tc.want, stk.Top())
+		if q.Front() != tc.want {
+			t.Errorf("want =  %v, but result = %v", tc.want, q.Front())
 		}
 	}
 }
@@ -46,28 +46,28 @@ func TestPop(t *testing.T) {
 	testCases := []testCase[interface{}]{
 		{
 			set:  []interface{}{3, 1, 6, 5, 1},
-			want: []interface{}{1, 5, 6, 1, 3},
+			want: []interface{}{3, 1, 6, 5, 1},
 		},
 		{
 			set:  []interface{}{1.1, 2.2, 3.3, 4.4, 5.5},
-			want: []interface{}{5.5, 4.4, 3.3, 2.2, 1.1},
+			want: []interface{}{1.1, 2.2, 3.3, 4.4, 5.5},
 		},
 		{
 			set:  []interface{}{"a", "b", "c", "d", "e"},
-			want: []interface{}{"e", "d", "c", "b", "a"},
+			want: []interface{}{"a", "b", "c", "d", "e"},
 		},
 	}
 
 	for _, tc := range testCases {
-		stk := Init[interface{}]()
+		q := Init[interface{}]()
 		for _, v := range tc.set {
-			stk.Push(v)
+			q.Push(v)
 		}
 
 		popItems := []interface{}{}
-		for !stk.Empty() {
-			popItems = append(popItems, stk.Top())
-			stk.Pop()
+		for !q.Empty() {
+			popItems = append(popItems, q.Front())
+			q.Pop()
 		}
 		if !reflect.DeepEqual(popItems, tc.want) {
 			t.Errorf("want =  %v, but result = %v", tc.want, popItems)
