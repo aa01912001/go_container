@@ -1,9 +1,12 @@
 // list is a doubly linked list implemented by generic
 package list
 
+import "sync"
+
 type List[T any] struct {
 	root Node[T]
 	len  uint64
+	lock sync.RWMutex
 }
 
 type Node[T any] struct {
@@ -15,6 +18,11 @@ type Node[T any] struct {
 
 // return the previous node of current node
 func (n *Node[T]) Prev() *Node[T] {
+	if n.list != nil {
+		n.list.lock.Lock()
+		defer n.list.lock.Unlock()
+	}
+
 	if n == nil || n.prev == &n.list.root {
 		return nil
 	}
@@ -23,6 +31,11 @@ func (n *Node[T]) Prev() *Node[T] {
 
 // return the next node of current node
 func (n *Node[T]) Next() *Node[T] {
+	if n.list != nil {
+		n.list.lock.Lock()
+		defer n.list.lock.Unlock()
+	}
+
 	if n == nil || n.next == &n.list.root {
 		return nil
 	}
@@ -46,6 +59,9 @@ func (l *List[T]) Len() uint64 {
 
 // return the first node in list
 func (l *List[T]) Front() *Node[T] {
+	l.lock.RLock()
+	defer l.lock.RUnlock()
+
 	if l.Len() == 0 {
 		return nil
 	}
@@ -54,6 +70,9 @@ func (l *List[T]) Front() *Node[T] {
 
 // return the last node in list
 func (l *List[T]) Back() *Node[T] {
+	l.lock.RLock()
+	defer l.lock.RUnlock()
+
 	if l.Len() == 0 {
 		return nil
 	}
@@ -82,21 +101,33 @@ func (l *List[T]) insertAfter(val T, target *Node[T]) *Node[T] {
 
 // push a node with specified value at the front of list
 func (l *List[T]) PushFront(val T) *Node[T] {
+	l.lock.Lock()
+	defer l.lock.Unlock()
+
 	return l.insertAfter(val, &l.root)
 }
 
 // push a node with specified value at the back of list
 func (l *List[T]) PushBack(val T) *Node[T] {
+	l.lock.Lock()
+	defer l.lock.Unlock()
+
 	return l.insertAfter(val, l.root.prev)
 }
 
 // insert a node with specified value before target node
 func (l *List[T]) InsertBefore(val T, target *Node[T]) *Node[T] {
+	l.lock.Lock()
+	defer l.lock.Unlock()
+
 	return l.insertAfter(val, target.prev)
 }
 
 // insert a node with specified value after target node
 func (l *List[T]) InsertAfter(val T, target *Node[T]) *Node[T] {
+	l.lock.Lock()
+	defer l.lock.Unlock()
+
 	return l.insertAfter(val, target)
 }
 
@@ -113,6 +144,9 @@ func (l *List[T]) remove(target *Node[T]) {
 // remove a node in list and return its value
 // panic if target is nil or not in list
 func (l *List[T]) Remove(target *Node[T]) T {
+	l.lock.Lock()
+	defer l.lock.Unlock()
+
 	if target == nil || target.list != l {
 		panic("remove invalid node")
 	}
